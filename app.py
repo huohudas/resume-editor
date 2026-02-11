@@ -189,6 +189,36 @@ st.markdown("""
         display: flex !important;
         align-items: center !important;
     }
+
+    /* ================= 修复补丁 ================= */
+    
+    /* 1. 强制显示侧边栏收起后的箭头 (>) */
+    [data-testid="stSidebarCollapsedControl"] {
+        display: block !important;
+        color: #808080 !important; /* 灰色箭头，深色模式会自动适配 */
+        z-index: 1000000 !important; /* 保证在最顶层 */
+    }
+    
+    /* 2. 配合修复：让 Header 变透明，防止挡住箭头的点击 */
+    header[data-testid="stHeader"] {
+        background: transparent !important;
+        pointer-events: none !important; /* 让鼠标点击能穿透 Header 点到下面的按钮 */
+    }
+    /* 但必须允许点击 Header 里的汉堡菜单和箭头 */
+    header[data-testid="stHeader"] > div {
+        pointer-events: auto !important;
+    }
+
+    /* 3. 修复"开启思考过程"文字换行问题 */
+    /* 强制 Toggle 组件内的文字不换行 */
+    div[data-testid="stCheckbox"] label p {
+        white-space: nowrap !important;
+        overflow: visible !important;
+    }
+    /* 如果它是放在 st.toggle 里的，使用这个选择器 */
+    div[data-testid="stWidgetLabel"] p {
+         white-space: nowrap !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
