@@ -21,203 +21,69 @@ if "generated_result" not in st.session_state:
 if "show_thought" not in st.session_state:
     st.session_state.show_thought = False
 
-# --- CSS 注入 (Apple Design 终极版：统一卡片 + 优雅修复) ---
+# --- 注入自定义 CSS (最终修复版) ---
 st.markdown("""
 <style>
-    /* ===== 1. 全局基调：纯净白灰 ===== */
-    :root { color-scheme: light !important; }
-    html, body, [data-testid="stAppViewContainer"] {
-        background: #fbfbfd !important; /* iOS 系统级浅灰底色 */
-        color: #1d1d1f !important;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-    }
-    [data-testid="stAppViewContainer"] * { color: #1d1d1f !important; }
-    div.stButton > button, div.stButton > button * { color: #ffffff !important; }
-
-    /* ===== 2. 侧边栏容器 ===== */
-    section[data-testid="stSidebar"] {
-        background: #f2f2f7 !important; /* 略深一点的灰色，区分主内容区 */
-        border-right: 1px solid #e5e5ea !important;
-    }
-    section[data-testid="stSidebar"] .block-container {
-        padding-top: 2rem !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-        gap: 0.75rem !important;
-    }
-    /* 分割线：柔和的细线 */
-    section[data-testid="stSidebar"] hr {
-        border: none !important;
-        border-top: 1px solid #d1d1d6 !important;
-        margin: 24px 0 !important;
-    }
-
-    /* ===== 3. 卡片系统 (统一 Info 和 Toggle) ===== */
+    /* ========================================= */
+    /* 1. 核心修复：侧边栏按钮找回计划 */
+    /* ========================================= */
     
-    /* 定义统一的卡片外观变量 */
-    .stAlert, [data-testid="stCheckbox"] {
-        background-color: #ffffff !important; /* 统一纯白背景 */
-        border: 0.5px solid #c6c6c8 !important; /* 极细的灰色边框 */
-        border-radius: 10px !important; /* iOS 标准圆角 */
-        box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important; /* 极淡的阴影，增加层次 */
-        padding: 12px 14px !important;
-        color: #1d1d1f !important;
-        margin-bottom: 8px !important;
-    }
-
-    /* 3.1 改造 st.info (关于本工具) */
-    [data-testid="stSidebar"] .stAlert {
-        border-left: 0.5px solid #c6c6c8 !important; /* 移除原本左侧的粗蓝线，改为全包围 */
-    }
-    [data-testid="stSidebar"] .stAlert > div {
-        align-items: center !important;
-    }
-    /* 让 emoji 和文字更协调 */
-    [data-testid="stSidebar"] .stAlert p {
-        font-size: 14px !important;
-        line-height: 1.4 !important;
-    }
-
-    /* 3.2 改造 Toggle (思考开关) */
-    [data-testid="stCheckbox"] {
-        margin-top: 0px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        height: auto !important;
-        min-height: 52px !important;
-    }
-    [data-testid="stCheckbox"] label {
-        flex: 1 !important;
-        display: flex !important;
-        align-items: center !important;
-    }
-    [data-testid="stCheckbox"] label p {
-        font-size: 14px !important;
-        font-weight: 500 !important;
-        color: #1d1d1f !important;
-        margin: 0 !important;
-    }
-
-    /* ===== 4. 修复 iOS 开关显示 (核心黑科技) ===== */
-    
-    /* 强制容器使用浅色配色方案，对抗 iOS Dark Mode */
-    [data-testid="stCheckbox"] {
-        color-scheme: light !important;
-    }
-
-    /* 自定义开关滑块 (OFF 状态) */
-    [data-testid="stCheckbox"] span[role="checkbox"][aria-checked="false"] {
-        background-color: #e9e9eb !important; /* iOS 标准未选中灰 */
-        border: 1px solid #d1d1d6 !important; /* 增加边框清晰度 */
-        width: 44px !important; /* 调整宽一点，更像 iOS */
-        height: 26px !important;
-    }
-    
-    /* 自定义开关滑块 (ON 状态) */
-    [data-testid="stCheckbox"] span[role="checkbox"][aria-checked="true"] {
-        background-color: #007aff !important; /* Apple Blue */
-        border-color: #007aff !important;
-        width: 44px !important;
-        height: 26px !important;
-    }
-
-    /* ===== 5. 顶部导航与输入框 ===== */
+    /* 关键点：千万不能设置 header 为 hidden 或 display: none */
+    /* 我们让 header 背景变透明，这样看起来像隐藏了，但里面的按钮还能用 */
     header[data-testid="stHeader"] {
-        background: rgba(255, 255, 255, 0.85) !important;
-        backdrop-filter: blur(20px) !important; /* 加重毛玻璃 */
-        border-bottom: 1px solid #e5e5ea !important;
-    }
-    header[data-testid="stHeader"] > div:first-child { display: none !important; }
-    
-    /* 汉堡菜单居中 */
-    [data-testid="stSidebarCollapsedControl"] {
-        position: fixed !important;
-        top: 27px !important;
-        transform: translateY(-50%) !important;
-        left: 16px !important;
-        color: #1d1d1f !important;
-        z-index: 999999 !important;
-    }
-
-    /* 结果显示区 */
-    code, .stCode, pre, [data-testid="stCode"] {
-        background-color: #f5f5f7 !important;
-        color: #1d1d1f !important;
-        border: 1px solid #e5e5ea !important;
-        border-radius: 12px !important;
-    }
-
-    /* 输入框 */
-    input:not([type="checkbox"]), textarea, select {
-        -webkit-appearance: none !important;
-        background: #ffffff !important;
-        color: #1d1d1f !important;
-        border: 1px solid #d2d2d7 !important;
-        border-radius: 12px !important;
-        padding: 10px !important;
-    }
-    .stTextInput > div > div, .stTextArea > div > div {
-        border: none !important;
         background: transparent !important;
-        box-shadow: none !important;
+        border-bottom: none !important;
+        pointer-events: none !important; /* 让点击穿透 header */
     }
 
-    /* 按钮 */
-    div.stButton > button {
-        background: #007aff !important;
-        border: none !important;
-        border-radius: 20px !important;
-        font-weight: 600 !important;
-        box-shadow: 0 2px 4px rgba(0,122,255,0.2) !important;
-    }
-
-    /* ===== 自定义 iOS 风格白卡片 (用于统一侧边栏风格) ===== */
-    .ios-card {
-        background-color: #ffffff !important;
-        border: 0.5px solid #c6c6c8 !important;
-        border-radius: 10px !important;
-        padding: 12px 14px !important;
-        font-size: 14px !important;
-        color: #1d1d1f !important;
-        line-height: 1.4 !important;
-        margin-bottom: 8px !important;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
-    }
-    /* 让 emoji 和文字垂直居中 */
-    .ios-card {
-        display: flex !important;
-        align-items: center !important;
-    }
-
-    /* ================= 修复补丁 ================= */
-    
-    /* 1. 强制显示侧边栏收起后的箭头 (>) */
+    /* 显式唤醒侧边栏开关按钮（箭头） */
     [data-testid="stSidebarCollapsedControl"] {
         display: block !important;
-        color: #808080 !important; /* 灰色箭头，深色模式会自动适配 */
-        z-index: 1000000 !important; /* 保证在最顶层 */
+        color: #888888 !important;  /* 强制设为深灰色 */
+        z-index: 999999 !important; /* 层级最高 */
+        pointer-events: auto !important; /* 恢复箭头的点击响应 */
     }
     
-    /* 2. 配合修复：让 Header 变透明，防止挡住箭头的点击 */
-    header[data-testid="stHeader"] {
-        background: transparent !important;
-        pointer-events: none !important; /* 让鼠标点击能穿透 Header 点到下面的按钮 */
-    }
-    /* 但必须允许点击 Header 里的汉堡菜单和箭头 */
-    header[data-testid="stHeader"] > div {
-        pointer-events: auto !important;
+    /* 深色模式下，把箭头自动变白 */
+    @media (prefers-color-scheme: dark) {
+        [data-testid="stSidebarCollapsedControl"] {
+            color: #ffffff !important;
+        }
     }
 
-    /* 3. 修复"开启思考过程"文字换行问题 */
-    /* 强制 Toggle 组件内的文字不换行 */
+    /* 隐藏右上角的汉堡菜单和 Deploy 按钮（如果你想让界面更干净） */
+    .stDeployButton, [data-testid="stToolbar"] {
+        visibility: hidden !important;
+    }
+    
+    /* ========================================= */
+    /* 2. 样式优化：防止文字换行 & iOS卡片 */
+    /* ========================================= */
+
+    /* 修复 Toggle 开关文字换行：强制不折行 */
+    div[data-testid="stWidgetLabel"] p,
     div[data-testid="stCheckbox"] label p {
         white-space: nowrap !important;
-        overflow: visible !important;
+        font-size: 14px !important;
     }
-    /* 如果它是放在 st.toggle 里的，使用这个选择器 */
-    div[data-testid="stWidgetLabel"] p {
-         white-space: nowrap !important;
+
+    /* iOS 风格白卡片 (保留原有设计) */
+    .ios-card {
+        background-color: #ffffff;
+        border: 1px solid #e5e5ea;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    
+    /* 卡片深色模式适配 */
+    @media (prefers-color-scheme: dark) {
+        .ios-card {
+            background-color: #1c1c1e;
+            border-color: #2c2c2e;
+            color: #ffffff;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
