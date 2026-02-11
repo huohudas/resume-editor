@@ -21,53 +21,17 @@ if "generated_result" not in st.session_state:
 if "show_thought" not in st.session_state:
     st.session_state.show_thought = False
 
-# --- 注入自定义 CSS (最终修复版) ---
+# --- 注入自定义 CSS (纯净修复版) ---
 st.markdown("""
 <style>
-    /* ========================================= */
-    /* 1. 核心修复：侧边栏按钮找回计划 */
-    /* ========================================= */
-    
-    /* 关键点：千万不能设置 header 为 hidden 或 display: none */
-    /* 我们让 header 背景变透明，这样看起来像隐藏了，但里面的按钮还能用 */
-    header[data-testid="stHeader"] {
-        background: transparent !important;
-        border-bottom: none !important;
-        pointer-events: none !important; /* 让点击穿透 header */
-    }
-
-    /* 显式唤醒侧边栏开关按钮（箭头） */
-    [data-testid="stSidebarCollapsedControl"] {
-        display: block !important;
-        color: #888888 !important;  /* 强制设为深灰色 */
-        z-index: 999999 !important; /* 层级最高 */
-        pointer-events: auto !important; /* 恢复箭头的点击响应 */
-    }
-    
-    /* 深色模式下，把箭头自动变白 */
-    @media (prefers-color-scheme: dark) {
-        [data-testid="stSidebarCollapsedControl"] {
-            color: #ffffff !important;
-        }
-    }
-
-    /* 隐藏右上角的汉堡菜单和 Deploy 按钮（如果你想让界面更干净） */
-    .stDeployButton, [data-testid="stToolbar"] {
-        visibility: hidden !important;
-    }
-    
-    /* ========================================= */
-    /* 2. 样式优化：防止文字换行 & iOS卡片 */
-    /* ========================================= */
-
-    /* 修复 Toggle 开关文字换行：强制不折行 */
+    /* 1. 修复 Toggle 开关文字换行 (保留此功能) */
     div[data-testid="stWidgetLabel"] p,
     div[data-testid="stCheckbox"] label p {
         white-space: nowrap !important;
         font-size: 14px !important;
     }
 
-    /* iOS 风格白卡片 (保留原有设计) */
+    /* 2. iOS 风格卡片 (保留此样式) */
     .ios-card {
         background-color: #ffffff;
         border: 1px solid #e5e5ea;
@@ -77,7 +41,7 @@ st.markdown("""
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
     
-    /* 卡片深色模式适配 */
+    /* 深色模式适配 */
     @media (prefers-color-scheme: dark) {
         .ios-card {
             background-color: #1c1c1e;
